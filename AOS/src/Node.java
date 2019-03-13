@@ -35,25 +35,6 @@ public class Node {
 	public Node() {
 	}
 
-//	public int getLeaderUID() {
-//		return this.leaderUID = this.highestUID;
-//	}
-//
-//	public void setNodeAsLeader() {
-//		this.isLeader = true;
-//	}
-
-//	public int getHighestUIDSoFar(int phase) {
-//		int[] lowestTimeStamp = new int[1];
-//		msgQueue.forEach((msg) -> {
-//			if (msg.getMsgType() == MessageType.SEND && msg.getSenderUID() > highestUID[0]
-//					&& msg.getMessagePhase() == phase) {
-//				highestUID[0] = msg.getSenderUID();
-//			}
-//		});
-//		this.lowestTimeStamp = highestUID[0];
-//		return this.highestUID;
-//	}
 	public int getFileNumber() {
 		return this.fileNumber;
 	}
@@ -84,6 +65,7 @@ public class Node {
 		return msg;
 	}
 
+	// Adds all messages to queue except Requests
 	synchronized public void addMessageToQueue(Message msg) {
 		//			setMyTimeStamp(Math.max(msg.timeStamp,getMyTimeStamp()));
 		if(msg.getMsgType() == MessageType.Request) {
@@ -94,21 +76,26 @@ public class Node {
 			msgQueue.add(msg);
 	}
 
+	// Implemented from the Paper. 
 	synchronized private void Treat_Request_Message(Message msg) {
-//		int our_timeStamp = getMyTimeStamp();
+		//	Calculates the priority of the current node request with the incoming node request	
 		Boolean priority = (msg.getTimeStamp() > temp) || ((msg.getTimeStamp() == temp)
 				&& (msg.getsenderUID()>this.getNodeUID()));
 		int fileNo = msg.getFileNumber();
 		
+		// if you are using the CS or waiting for a request and have a priority ==> defer request
 		if(this.using[fileNo] || (this.waiting[fileNo] && priority)) {
 			System.out.println("Reply Deferred for file: "+fileNo+" UID:"+ msg.getsenderUID()+ " tmp:"+msg.getTimeStamp()+" at:"+getMyTimeStamp());
 			this.reply_deferred[fileNo][msg.getsenderUID()] = true;
 			this.authorize[fileNo][msg.getsenderUID()] = false;
 		}
+
+		// if neither not using the CS nor waiting for a request or if you don't have a priority ==> send reply
 		else if( !(this.using[fileNo] || this.waiting[fileNo]) || (this.waiting[fileNo] && !authorize[fileNo][msg.getsenderUID()])&& !priority) {
 			this.authorize[fileNo][msg.getsenderUID()] = false;
 			sendReply(fileNo,msg.getsenderUID());
 		}
+		// Send the request to the node as you haven't send it because you had its authorization.  
 		else if(this.waiting[fileNo] && this.authorize[fileNo][msg.getsenderUID()] && !priority) {
 			System.out.println("Setting auth for file: "+fileNo+" UID: "+msg.getsenderUID()+" to:false");
 			this.authorize[fileNo][msg.getsenderUID()] = false;
@@ -116,7 +103,7 @@ public class Node {
 			sendRequest(fileNo,msg.getsenderUID());
 		}
 	}
-
+	// Returns true when a request is received from the Node. Useful for multiple CS Entry
 	synchronized public boolean ifRequested() {
 		
 		for(int i = 0; i < authorize[0].length;i++) {
@@ -127,7 +114,7 @@ public class Node {
 		}
 		return false;
 	}
-	
+	// Returns the count of requested nodes
 	synchronized public int getCountNotAuthorized() {
 		int count =0;
 		for(int i = 0; i < authorize[0].length;i++) {
@@ -138,7 +125,7 @@ public class Node {
 		}
 		return count;
 	}
-	
+	// Sends Request to the specified to Node with the UID. 
 	public void sendRequest(int fileNumber,int getsenderUID) {
 		for(TCPClient client: connectedClients) {
 			if(getsenderUID == client.getClientUID())
@@ -151,7 +138,7 @@ public class Node {
 				}
 		}
 	}
-
+// Sends Replies to the UID specified along with the fileNumber. 
 	public void sendReply(int fileNumber, int getsenderUID) {
 		for(TCPClient client: connectedClients) {
 			if(getsenderUID == client.getClientUID())
@@ -194,7 +181,7 @@ public class Node {
 	public List<TCPClient> getAllConnectedClients() {
 		return this.connectedClients;
 	}
-	
+	// Lamports Logical TimeStamp
 	synchronized public void IncrementMyTimeStamp() {
 		timeStamp++;
 	}
@@ -203,6 +190,7 @@ public class Node {
 		return timeStamp;
 	}
 	
+	// Sets the size of each Arrays. Depending on the files hosted.
 	public void setAuthorizeReplySize(int fileNumbers){
 		this.using = new boolean[fileNumbers];;
 		this.waiting = new boolean[fileNumbers];;
@@ -232,13 +220,14 @@ public class Node {
 	}
 
 	public void waitforReplies() {
-		
-		// TODO What if reply occurs after processing of the queue and we are clearing the queue
+		// For optimization Requests shouldn't be sent again to Received replies unless those nodes send request back
+		// Count not authorized gives the info abnout those newly received requests from nodes
 		int requiredCount = getCountNotAuthorized(); long count = 0;
 		System.out.println("Count not authorized: "+requiredCount);
 		while(count != requiredCount) {
 			if(!this.msgQueue.isEmpty()) {
 				Message msg = getMessageFromQueue();
+				// If received a reply update the Authorize array for that file and Node.
 				authorize[fileNumber][msg.getsenderUID()] = true;
 				System.out.println("count = "+(++count));
 				if(count > requiredCount) {
@@ -253,6 +242,5 @@ public class Node {
 				}
 			}
 		}
-//		this.msgQueue.removeIf(t -> t.getMsgType() == MessageType.Reply);
 	}
 }

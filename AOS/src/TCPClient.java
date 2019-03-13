@@ -48,6 +48,7 @@ public class TCPClient extends Thread{
 	}
 	
 	public void run() {
+		// If using TCPClient as a ClientRequestHandler 
 		try {
 			in = new ObjectInputStream(clientsocket.getInputStream());
 			out = new ObjectOutputStream(clientsocket.getOutputStream());
@@ -73,7 +74,7 @@ public class TCPClient extends Thread{
 
 				else if (msg instanceof Message) {
 					Message broadcastMessage = (Message) msg;
-					// add received messages to Blocking queue
+					// Increment Lamport Clock &  add received messages to Blocking queue
 					this.dsNode.setMyTimeStamp(Math.max(broadcastMessage.getTimeStamp(), dsNode.getMyTimeStamp()+1));
 					System.out.println("Msg rx UID: " + broadcastMessage.getsenderUID()+" "+broadcastMessage.getMsgType()+" tmp:"+broadcastMessage.getTimeStamp()+" at:"+dsNode.getMyTimeStamp()+ "for "+broadcastMessage.getFileName());
 					this.dsNode.addMessageToQueue(broadcastMessage);
@@ -86,7 +87,7 @@ public class TCPClient extends Thread{
 		}
 	}
 	
-	
+	// If using TCPClient as a Client Request Sender
 	public void listenSocket() {
 		// Create socket connection
 		try {
@@ -121,6 +122,7 @@ public class TCPClient extends Thread{
 	public void listenToMessages() {
 		try {
 			while (true) {
+				// listen for messages
 				Message message = (Message) in.readObject();
 				this.dsNode.setMyTimeStamp(Math.max(message.getTimeStamp(), dsNode.getMyTimeStamp()+1));
 				// add received messages to Blocking queue
@@ -136,6 +138,7 @@ public class TCPClient extends Thread{
 	}
 	
 	public Message listenToServerReplies() {
+		// File Server Replies
 		flag = true;
 		Message message = null;
 		System.out.println("Started Listening to Server Reply");
@@ -143,24 +146,12 @@ public class TCPClient extends Thread{
 			message = (Message) in.readObject();
 			System.out.println("ServerReply Received");
 		} catch (ClassNotFoundException | IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		flag = false;
 		return message;
 	}
 	
-//	public void closeConnection() {
-//		try {
-//			out.writeObject(new Message(MessageType.Close));
-//			System.out.println("closeConnection()");
-//			clientsocket.close();
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//	}
-
 	public boolean getFlag() {
 		return this.flag;
 	}

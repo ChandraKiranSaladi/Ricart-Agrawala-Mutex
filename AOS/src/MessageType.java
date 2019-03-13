@@ -4,5 +4,5 @@ public enum MessageType {
 	Enquire,
 	Read,
 	Write,
-	ServerReply, Close
+	ServerReply
 }

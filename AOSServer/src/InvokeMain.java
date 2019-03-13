@@ -8,18 +8,10 @@ public class InvokeMain {
 	public static void main(String[] args) {
 		try {
 
-			// build a node for each terminal
-
-			// logic for assigning nodes - temporary
-//			Scanner scanner = new Scanner(System.in);
-			
-//			int hostNumIndex = scanner.nextInt();
-			// Integer.parseInt(args[0]);
 			String clientHostName = "";
 			try {
 					clientHostName = InetAddress.getLocalHost().getHostName();
 			} catch (UnknownHostException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 			}
 
@@ -28,7 +20,6 @@ public class InvokeMain {
 			System.out.println("Initializing Server with UID: " + dsNode.UID);
 
 			// Start server thread
-
 			Runnable serverRunnable = new Runnable() {
 				public void run() {
 					TCPServer server = new TCPServer(dsNode);

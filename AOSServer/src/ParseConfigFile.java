@@ -51,7 +51,7 @@ class ParseConfigFile {
 			node = nodeList.get(hostName);
 			node.path = path;
 
-			File server = new File(path+"\\Server"+node.getNodeUID());
+			File server = new File(path+"/Server"+node.getNodeUID());
 			node.path = server.getPath();
 			if(server.exists() && server.isDirectory()) {
 				for(File f : server.listFiles())
@@ -60,7 +60,7 @@ class ParseConfigFile {
 			}
 			server.mkdir();
 			for( int i=0; i < files; i++) {
-				File tmp = new File(server.getPath()+"\\file"+i+".txt");
+				File tmp = new File(server.getPath()+"/file"+i+".txt");
 				tmp.createNewFile();
 			}
 		} finally {

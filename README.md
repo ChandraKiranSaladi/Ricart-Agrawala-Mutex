@@ -92,5 +92,9 @@ Now you can login without using password 
 
 This is an interesting algorithm which takes <= 2(N-1) messages to enter the critical Section, unlike Lamports Mutex which utilizes 3(N-1).
 
+## Note
+    Changing UIDs to a different order than 0 1 2 3 4 , throws exception. Authorize, reply deferred information is implemented as arrays for simplicity, not HashMaps.
+    The Given code will not work in LocalHost. Check the other branch to test it on the Windows LocalMachine
+    
 #### Feedback
 A lot of Refactoring can make this code really elegant.   

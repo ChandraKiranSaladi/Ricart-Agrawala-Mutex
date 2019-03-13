@@ -12,14 +12,6 @@ public class InvokeMain {
 		try {
 
 			// build a node for each terminal
-
-			// logic for assigning nodes - temporary
-//			Scanner scanner = new Scanner(System.in);
-			
-//			int hostNumIndex = scanner.nextInt();
-			// Integer.parseInt(args[0]);
-			//int hostNumIndex = 0;
-
 			String clientHostName = "";
 			try {
 					clientHostName = InetAddress.getLocalHost().getHostName();
@@ -29,13 +21,9 @@ public class InvokeMain {
 			}
 
 			Node dsNode = BuildNode(clientHostName);
-
-
 			System.out.println("Initializing Server with UID: " + dsNode.UID);
 
-			
 			// Start server thread
-
 			Runnable serverRunnable = new Runnable() {
 				public void run() {
 					TCPServer server = new TCPServer(dsNode);
@@ -48,23 +36,11 @@ public class InvokeMain {
 
 			System.out.println("Server started and listening to client requests.........");
 
-			// Start client threads at this node
-			System.out.println("Press any key to start clients.........");
-
-			BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));
-//			String input = bufferRead.readLine();
-
+			// Sleep for sufficient time for all the node Servers to start
 			Thread.sleep(6000);
-//			if(input != null){ 	
-//				for (Node node : ParseConfigFile.nodeList) {
-//					System.out.println("node.UIDNeighbors.size:"+node.uIDofNeighbors.size());
-					dsNode.uIDofNeighbors.entrySet().forEach((neighbour) -> {
-						// TCPClient client = new TCPClient(neighbour.getKey(), dsNode.port,
-						// dsNode.HostName,neighbour.getValue().PortNumber,
-						// neighbour.getValue().HostName);
 
-						// hard coded to local host for now
-//						if (neighbour.getKey() == dsNode.UID) {
+			// Iterate through the node neighbors to send the Client Requests
+					dsNode.uIDofNeighbors.entrySet().forEach((neighbour) -> {
 							System.out.println("neighbour.getKey(): "+neighbour.getKey()+"dsNode.UID:"+dsNode.UID );
 							Runnable clientRunnable = new Runnable() {
 								public void run() {
@@ -73,6 +49,8 @@ public class InvokeMain {
 											dsNode);
 									System.out.println("dsNode.UID: "+dsNode.UID+"neighbour.getValue().PortNumber:"+neighbour.getValue().PortNumber
 											+"neighbour.getKey() "+neighbour.getKey());
+									// The following function calls starts the Socket Connections, and adds the client to a list to access
+									// it later. Listen Messages is an infinite loop to preserve the socket connection
 									client.listenSocket();
 									client.sendHandShakeMessage();
 									dsNode.addClient(client);
@@ -81,23 +59,24 @@ public class InvokeMain {
 							};
 							Thread clientthread = new Thread(clientRunnable);
 							clientthread.start();
-//						}
 					});
-//				}
-//			}
+
+			// Sleep so that all the Client connections are established		
 			Thread.sleep(5000);
 			RicartAgrawala algo = new RicartAgrawala(dsNode);
+			// Start Enquiring from the File Server to obtain the metadata (Number of files and fileNames
 			algo.enquire();
+			// Sleep for sufficient time so all the clients start executing the algorithm almost at the same time
 			Thread.sleep(10000);
 			algo.InitiateAlgorithm();
 
 		}catch(Exception e){
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	
 	}
 
+	// Finds the current node's UID, HostName, Port and its neighbors, by reading from a config File. 
 	public static Node BuildNode(String clientHostName) {
 		Node dsNode = new Node();
 		try {

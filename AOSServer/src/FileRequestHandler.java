@@ -14,6 +14,7 @@ public class FileRequestHandler {
 	}
 	
 	public void listen() {
+		// Listen for Requests
 		while(true) {
 			if(dsNode.msgQueue.size() != 0) {
 				String str = "";
@@ -33,6 +34,7 @@ public class FileRequestHandler {
 	}
 
 	private String enquire() {
+		// Send the Filenames and the no.of files
 		File dir = new File(dsNode.path);
 		if(!dir.exists())
 			dir.mkdir();
@@ -49,6 +51,7 @@ public class FileRequestHandler {
 	private void writeToFile(int UID, int timestamp, String fileName) {
 		try
 		{
+			// Append (UID and Timestamp) to the file
 		    FileWriter fw = new FileWriter(dsNode.path+"/"+fileName,true); //the true will append the new data
 		    fw.write("UID: "+UID+" TimeStamp: "+timestamp+"\n");//appends the string to the file
 		    System.out.println("Write. "+"UID: "+UID+" TimeStamp: "+timestamp + " "+fileName);
@@ -61,7 +64,7 @@ public class FileRequestHandler {
 	}
 
 	private String readFromFile(String fileName) {
-		// TODO Auto-generated method stub
+		// Read Last line from the file
 		String last="", line;
 	    BufferedReader input;
 		try {

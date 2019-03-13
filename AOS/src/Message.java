@@ -1,5 +1,6 @@
 import java.io.Serializable;
 
+// Message Class with all the required Attributes for message exchanges. 
 public class Message  implements Serializable, Comparable<Message> {
 	
 	private static final long serialVersionUID = 1L;
@@ -58,7 +59,6 @@ public class Message  implements Serializable, Comparable<Message> {
 	}
 	@Override
 	public int compareTo(Message msg) {
-		// TODO Auto-generated method stub
 		if(msg.getMsgType() == MessageType.Reply)
 			return -1;
 		else

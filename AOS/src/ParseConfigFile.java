@@ -16,9 +16,9 @@ class NeighbourNode {
 class ParseConfigFile {
 	// final static List<Node> nodelist = new ArrayList<>();
 	final static HashMap<String, Node> nodeList = new HashMap<>();
-
+	// Returns the current node details and its neighbors by reading from a config file
 	public static Node read(String Path, String hostName) throws Exception {
-		System.out.println(clientHostName);
+		System.out.println(hostName);
 		BufferedReader b = new BufferedReader(new FileReader(Path));
 		HashMap<Integer, NeighbourNode> map;
 		String readLine = "";
