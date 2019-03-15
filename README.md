@@ -6,6 +6,8 @@ O.S.F. Carvalho and G. Roucairol. On Mutual Exclusion in Computer Networks (Tech
     * Java-8
     * Ubuntu
     * Shell script
+  
+  AOS & AOSServer Folder contains the source files for Client & Server respectively
 ***   
 ### **Execution** 
 1) Unzip or clone the project.

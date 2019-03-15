@@ -9,24 +9,22 @@ public class RicartAgrawala {
 	public RicartAgrawala(Node _dsNode) {
 		this.dsNode = _dsNode;
 		servers[0] = new TCPClient(0, 3223, "dc02.utdallas.edu", dsNode.getNodeHostName(), 0, dsNode);
-		servers[1] = new TCPClient(0, 3224, "dc02.utdallas.edu", dsNode.getNodeHostName(), 1, dsNode);
-		servers[2] = new TCPClient(0, 3225, "dc02.utdallas.edu", dsNode.getNodeHostName(), 2, dsNode);
+		servers[1] = new TCPClient(0, 3224, "dc03.utdallas.edu", dsNode.getNodeHostName(), 1, dsNode);
+		servers[2] = new TCPClient(0, 3225, "dc05.utdallas.edu", dsNode.getNodeHostName(), 2, dsNode);
 	}
 
 	public void InitiateAlgorithm() {
-		
+
 		String[] operation = new String[2];
 		operation[0] = "Read";
 		operation[1] = "Write";
 		
 		while (this.csEntryCount < 20) {
-			// Select an operation & File at Random
 			int op = new Random().nextInt(2);
 			int randomFileNumber = getRandomNumber();
 			dsNode.setFileNumber(randomFileNumber);
 			Request_Resource();
-			// Execute Critical Section multiple times if previous request is same as current && No request is received for the
-			// file
+			
 			do {
 				CriticalSection(op);
 				op = new Random().nextInt(2);
@@ -47,7 +45,6 @@ public class RicartAgrawala {
 	}
 
 	public void Request_Resource() {
-		// Increment TimeStamp and send requests to nodes which we sent a reply earlier 
 		int FileNumber = dsNode.getFileNumber();
 		dsNode.IncrementMyTimeStamp();
 		dsNode.setWaiting(true);
@@ -68,11 +65,12 @@ public class RicartAgrawala {
 				}
 			});
 		}
-		// wait till you receive the replies to enter CS
+
 		dsNode.waitforReplies();
 		dsNode.setWaiting(false);
 		dsNode.setUsing(true);
 
+		// TODO: Wait for replies to enter the Critical Section
 	}
 
 	synchronized private void CriticalSection(int op) {
@@ -98,7 +96,6 @@ public class RicartAgrawala {
 		int fileNumber = dsNode.getFileNumber();
 		System.out.println("Resource Released");
 		dsNode.setUsing(false);
-		// Send Deferred Replies
 		for( int i = 0; i < dsNode.reply_deferred[0].length; i++) {
 			if(dsNode.reply_deferred[fileNumber][i] != true || i == dsNode.UID)
 				continue;
@@ -111,11 +108,10 @@ public class RicartAgrawala {
 	}
 
 	public void Read() {
-		// Select a File Server at random
 		int index = new Random().nextInt(3);
+		System.out.println("Read from Server:"+index);
 		servers[index].listenSocket();
 		try {
-			// Without this thread socket is closed at random times
 			Runnable clientRunnable = new Runnable() {
 				public void run() {
 					Message msg = servers[index].listenToServerReplies();
@@ -125,11 +121,11 @@ public class RicartAgrawala {
 			Thread clientthread = new Thread(clientRunnable);
 			clientthread.start();
 			servers[index].getOutputWriter().writeObject(new Message(dsNode.getMyTimeStamp(),dsNode.UID,MessageType.Read,dsNode.getFileNumber()));
-			// Wait for Server Reply
 			while(servers[index].getFlag() != false) {
 				try {
 					Thread.sleep(100);
 				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -143,11 +139,10 @@ public class RicartAgrawala {
 
 	public void Write() {
 
-		// Write to all the servers
 		for(TCPClient x: servers) {
 			x.listenSocket();
 			try {
-				x.getOutputWriter().writeObject(new Message(dsNode.getMyTimeStamp(),dsNode.UID,MessageType.Write,dsNode.getFileNumber()));
+				x.getOutputWriter().writeObject(new Message(dsNode.temp,dsNode.UID,MessageType.Write,dsNode.getFileNumber()));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -159,11 +154,11 @@ public class RicartAgrawala {
 			};
 			Thread clientthread = new Thread(clientRunnable);
 			clientthread.start();
-			// Wait for Server Reply
 			while(x.getFlag() != false) {
 				try {
 					Thread.sleep(100);
 				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -172,18 +167,18 @@ public class RicartAgrawala {
 	}
 
 	public void enquire() {
-		// Get the Meta data of the Hosted Files
 		servers[0].listenSocket();
+
 		try {
 			servers[0].getOutputWriter().writeObject(new Message(dsNode.getMyTimeStamp(),dsNode.UID,MessageType.Enquire));
 		} catch (IOException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		Message msg = servers[0].listenToServerReplies();
 		//		servers[0].closeConnection();
 		String str = msg.getStr();
 		String[] tmp = str.split("\\r?\\n");
-		// Set the array size depending on the filenumbers
 		dsNode.setAuthorizeReplySize(Integer.parseInt(tmp[tmp.length-1]));
 		System.out.println("ServerFiles count: "+tmp[tmp.length-1]);
 		System.out.println("Enquiry: " + msg.getStr());

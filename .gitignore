@@ -1,15 +1,2 @@
-AOS/bin/ParseConfigFile.class
-AOS/bin/InvokeMain.class
-AOS/bin/InvokeMain$1.class
-AOS/bin/InvokeMain$2.class
-AOS/bin/Message.class
-AOS/bin/MessageType.class
-AOS/bin/Node.class
-AOS/bin/RicartAgrawala.class
-AOS/bin/RicartAgrawala$1.class
-AOS/bin/RicartAgrawala$2.class
-AOS/bin/TCPClient.class
-AOSServer/bin/FileRequestHandler.class
-AOSServer/bin/InvokeMain.class
-AOSServer/bin/InvokeMain$1.class
-AOSServer/bin/ParseConfigFile.class
+AOS/bin/*
+AOSServer/bin/*
