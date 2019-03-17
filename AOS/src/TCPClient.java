@@ -77,7 +77,7 @@ public class TCPClient extends Thread{
 					// Increment Lamport Clock &  add received messages to Blocking queue
 					this.dsNode.setMyTimeStamp(Math.max(broadcastMessage.getTimeStamp(), dsNode.getMyTimeStamp()+1));
 					System.out.println("Msg rx UID: " + broadcastMessage.getsenderUID()+" "+broadcastMessage.getMsgType()+" tmp:"+broadcastMessage.getTimeStamp()+" at:"+dsNode.getMyTimeStamp()+ "for "+broadcastMessage.getFileName());
-					this.dsNode.addMessageToQueue(broadcastMessage);
+					this.dsNode.messageHandler(broadcastMessage);
 				}
 
 			} catch (IOException | ClassNotFoundException e) {
@@ -126,7 +126,7 @@ public class TCPClient extends Thread{
 				Message message = (Message) in.readObject();
 				this.dsNode.setMyTimeStamp(Math.max(message.getTimeStamp(), dsNode.getMyTimeStamp()+1));
 				// add received messages to Blocking queue
-				this.dsNode.addMessageToQueue(message);
+				this.dsNode.messageHandler(message);
 				
 				System.out.println("Msg rx UID: " + message.getsenderUID()+" "+message.getMsgType()+" tmp"+message.getTimeStamp()+" at:"+dsNode.getMyTimeStamp()+ "for file:"+message.getFileName());
 			}

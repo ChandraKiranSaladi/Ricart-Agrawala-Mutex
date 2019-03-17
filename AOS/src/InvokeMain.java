@@ -41,14 +41,12 @@ public class InvokeMain {
 
 			// Iterate through the node neighbors to send the Client Requests
 					dsNode.uIDofNeighbors.entrySet().forEach((neighbour) -> {
-							System.out.println("neighbour.getKey(): "+neighbour.getKey()+"dsNode.UID:"+dsNode.UID );
 							Runnable clientRunnable = new Runnable() {
 								public void run() {
 									TCPClient client = new TCPClient(dsNode.UID,
 											neighbour.getValue().PortNumber, neighbour.getValue().HostName, dsNode.getNodeHostName(), neighbour.getKey(),
 											dsNode);
-									System.out.println("dsNode.UID: "+dsNode.UID+"neighbour.getValue().PortNumber:"+neighbour.getValue().PortNumber
-											+"neighbour.getKey() "+neighbour.getKey());
+									System.out.println("Client Connection sent from "+dsNode.UID+" to UID: "+neighbour.getKey()+" at Port: "+neighbour.getValue().PortNumber);
 									// The following function calls starts the Socket Connections, and adds the client to a list to access
 									// it later. Listen Messages is an infinite loop to preserve the socket connection
 									client.listenSocket();

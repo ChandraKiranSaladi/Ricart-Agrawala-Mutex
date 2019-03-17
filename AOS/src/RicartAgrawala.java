@@ -28,7 +28,7 @@ public class RicartAgrawala {
 			do {
 				CriticalSection(op);
 				op = new Random().nextInt(2);
-			}while(!dsNode.ifRequested() && this.csEntryCount < 6 && (getRandomNumber() == dsNode.getFileNumber()));
+			}while(!dsNode.ifRequestReceived() && this.csEntryCount < 6 && (getRandomNumber() == dsNode.getFileNumber()));
 			Release_Resource();
 
 			try {
@@ -99,8 +99,6 @@ public class RicartAgrawala {
 		for( int i = 0; i < dsNode.reply_deferred[0].length; i++) {
 			if(dsNode.reply_deferred[fileNumber][i] != true || i == dsNode.UID)
 				continue;
-			dsNode.authorize[fileNumber][i] = dsNode.reply_deferred[fileNumber][i] = false;
-			dsNode.reply_deferred[fileNumber][i] = false;
 			dsNode.authorize[fileNumber][i] = dsNode.reply_deferred[fileNumber][i] = false;
 			System.out.println("Sending Deferred Replies");
 			dsNode.sendReply(fileNumber,i);
