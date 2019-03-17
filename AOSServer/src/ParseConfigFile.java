@@ -53,6 +53,7 @@ class ParseConfigFile {
 
 			File server = new File(path+"/Server"+node.getNodeUID());
 			node.path = server.getPath();
+			System.out.println("ServerPath: "+node.path);
 			if(server.exists() && server.isDirectory()) {
 				for(File f : server.listFiles())
 					if(!f.isDirectory())

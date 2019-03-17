@@ -52,7 +52,7 @@ public class FileRequestHandler {
 		try
 		{
 			// Append (UID and Timestamp) to the file
-		    FileWriter fw = new FileWriter(dsNode.path+"/"+fileName,true); //the true will append the new data
+			FileWriter fw = new FileWriter(dsNode.path+"/"+fileName,true); //the true will append the new data
 		    fw.write("UID: "+UID+" TimeStamp: "+timestamp+"\n");//appends the string to the file
 		    System.out.println("Write. "+"UID: "+UID+" TimeStamp: "+timestamp + " "+fileName);
 		    fw.close();
