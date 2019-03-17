@@ -16,7 +16,7 @@ O.S.F. Carvalho and G. Roucairol. On Mutual Exclusion in Computer Networks (Tech
 
 ### Description:
 
-This is an interesting algorithm which takes <= 2(N-1) messages to enter the critical Section, unlike Lamports Mutex which utilizes 3(N-1). For more 
+This is an interesting algorithm which takes <= 2(N-1) messages to enter the critical Section, unlike Lamports Mutex which utilizes 3(N-1). For more details read Project_1 Description.pdf
 ***
 ## Important Note
 
