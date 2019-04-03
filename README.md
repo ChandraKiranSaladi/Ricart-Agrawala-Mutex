@@ -41,7 +41,7 @@ This is an interesting algorithm which takes <= 2(N-1) messages to enter the cri
 1) Unzip or clone the project.
 2) Update the respective paths in configAOS.txt & configAOSServer.txt to select the paths for your Servers to host the files (Path should be inside the DC Machine). No need to create directories, code takes care of it. *Config files guide the shell script to the locations of each node in the network*.
 3) As per the project description Executing the code on DC machines is mandatory. Make sure you have password less login setup before you run the Shell script. Details can be found below. ( To access DC Machines you have to be a UTD Student )
-   <br/> <h4><a href="#password-less-login">Passwordless login</a></h4>
+   <br/> <h4><a href="#password-less-login">Passwordless login ( Simple 12 steps )</a></h4>
 4) Update the paths inside ParseConfigFile.java, readFile.txt.
 5) **Config files and shell scripts will only be in your local machine**
    All the code will reside in the Server. Copying the files in csgrads1 will update the code in all DC machines as DC Machine implements Distributed Shared File System
@@ -50,7 +50,8 @@ This is an interesting algorithm which takes <= 2(N-1) messages to enter the cri
    ```shell
     $chmod +x *.sh
 
-8) Compiles the java code
+8) Compiles the java code ( You can ignore this step, if you are using launcher.sh and launchServer.sh.<br> The shell scripts will compile the code and execute )
+ 
     ```shell
     $ cd AOS
     $ javac -cp "./bin" -d "./bin" ./src/*.java
@@ -62,7 +63,7 @@ This is an interesting algorithm which takes <= 2(N-1) messages to enter the cri
     "launch.sh" sets up the terminals for Clients<br>
     "cleanup.sh" closes all the ssh connections of the terminals <br>
 
-10) Open a terminal and go into the directory of shell scripts
+10) Open a terminal and go into the directory of shell scripts. Obviously, always launch the Servers first.
     ```shell
     $ ./launchServer.sh 
     ```
@@ -71,19 +72,19 @@ This is an interesting algorithm which takes <= 2(N-1) messages to enter the cri
     $ ./launch.sh
     ```
 12) Terminals will pop up and start executing the code.
-    In the end view your files in the Server. All the respective files will have the same values.
+    In the end, view your files in the Server. All the respective files will have the same values.
 
 13) Open a terminal and go into the directory of shell scripts
     ```shell
     $ ./cleanup.sh
     ```
-This cleanups all the sockets you have used in the dc machines.
+This will terminate all the spawned terminals.
 * The Details of the Project Description can be found in Project_1 Description.pdf
 ***
 ## [Password Less Login](#password-less-login)
 Note: $ is a prompt in the terminal: Ignore $ while copying these commands into the terminal
 
-1) Open terminal, type
+1) Open the terminal in your local machine, type
 ```shell
   $ cd
   $ cd .ssh
@@ -118,40 +119,35 @@ Now you'll be in dc01/.ssh directory
 The key fingerprint is: … something … , hit enter <br>
 The keys randomart image is: … … (special image), hit enter <br>
 
-10) type 
-```shell
-  $ pwd
-```
-copy this path
-
-11) type
+7) type
 ```shell
   $ cat id_rsa.pub >> authorized_keys
 ```
-12) type
+8) type
 ```shell
   $ exit
 ```
-Now you'll be in your local machine
+Now you'll be in .ssh directory in your local Machine.
 
-12) type
+9) type
 ```shell
   $ sftp netid@dc01.utdallas.edu
 ```
-13) enter your password
+Enter your password
 
-14) Type
+10) Type
 ```shell
-  sftp> lcd .ssh
+  sftp> cd .ssh
 ```
 Now you'll be in dc01/.ssh directory
 
-13) Type
+11) Type
 ```shell
   sftp> get id_rsa
 ```
+id_rsa file will be copied into your .ssh directory in local machine
 
-14) type
+12) Type
 ```shell
   $ exit
 ```
